@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.db
+*.txt
+!requirements.txt
+.coverage
+.pylintrc
+rel_*.txt
+loja*.db
+test_*.db
