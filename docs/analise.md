@@ -96,3 +96,54 @@ Para provar que o OCP foi satisfeito, as três extensões obrigatórias foram ad
 
 ## 8.6 (f) Reflexão Metacognitiva
 O maior desafio encontrado no processo de refatoração foi desvincular a lógica de notificação (que misturava regras de envio de e-mails, com cálculos de pontuação baseados no status e tipo VIP/Corporativo) de dentro do `OrderService`. A solução para esse alto acoplamento foi o padrão **Observer**, transformando o OrderService em um "publisher" agnóstico, o que permitiu que cada notificador avaliasse as informações recebidas independentemente. Isso trouxe um enorme alívio na legibilidade e facilitou imensamente a adição posterior do `WhatsAppNotifier`.
+
+
+## 8.7 Sa�da dos Testes e M�tricas Autom�ticas
+
+### Cobertura de Testes (pytest + coverage)
+`	ext
+============================= test session starts =============================
+platform win32 -- Python 3.13.1, pytest-9.0.3, pluggy-1.6.0
+rootdir: C:\projetos\Refatoracao-Limpa
+configfile: pytest.ini
+plugins: anyio-4.13.0, dash-4.1.0, cov-7.1.0
+collected 22 items
+
+tests\test_extensions.py ...                                             [ 13%]
+tests\test_legacy_behavior.py ...................                        [100%]
+
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.13.1-final-0 _______________
+
+Name                                           Stmts   Miss  Cover
+------------------------------------------------------------------
+legacy.py                                         52      2    96%
+src\__init__.py                                    0      0   100%
+src\interfaces\__init__.py                         0      0   100%
+src\interfaces\order_repository_interface.py      25      7    72%
+src\models\__init__.py                             0      0   100%
+src\models\item.py                                 8      1    88%
+src\models\order.py                               14      0   100%
+src\models\order_factory.py                       10      0   100%
+src\observers\notification_observer.py            55      2    96%
+src\observers\whatsapp_notifier.py                12      0   100%
+src\repositories\__init__.py                       0      0   100%
+src\repositories\sqlite_order_repository.py       43      0   100%
+src\services\__init__.py                           0      0   100%
+src\services\order_service.py                     64      4    94%
+src\services\report_service.py                    26      0   100%
+src\strategies\crypto_strategy.py                 11      0   100%
+src\strategies\discount_strategy.py               33      2    94%
+src\strategies\payment_strategy.py                30      5    83%
+src\strategies\volume_discount_strategy.py         9      0   100%
+------------------------------------------------------------------
+TOTAL                                            392     23    94%
+============================= 22 passed in 0.36s ==============================
+
+`
+
+### An�lise de Tipagem (Mypy)
+`	ext
+Success: no issues found in 18 source files
+
+`
