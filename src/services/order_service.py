@@ -5,7 +5,7 @@ class OrderService:
     def __init__(self, repository: OrderRepositoryInterface):
         self.repository = repository
 
-    def calculate_total(self, order: Order, apply_ped_especial_rule: bool = False):
+    def calculate_total(self, order: Order):
         tot = 0.0
         for i in order.itens:
             if i.tipo == 'normal':
@@ -17,7 +17,7 @@ class OrderService:
             elif i.tipo == 'frete_gratis':
                 tot += i.preco * i.quantidade
         
-        if apply_ped_especial_rule:
+        if order.tipo_pedido == 'especial':
             tot = tot * 1.15
         else:
             if order.tipo_pedido == 'vip':
@@ -28,12 +28,12 @@ class OrderService:
         order.total = tot
         return tot
 
-    def create_order(self, order: Order, is_special: bool = False) -> int:
-        self.calculate_total(order, apply_ped_especial_rule=is_special)
+    def create_order(self, order: Order) -> int:
+        self.calculate_total(order)
         order_id = self.repository.save(order)
         
         n = order.cliente
-        if is_special:
+        if order.tipo_pedido == 'especial':
             print(f"Email especial enviado para {n}: Pedido especial recebido!")
             return order_id
 
@@ -75,14 +75,14 @@ class OrderService:
             print("Metodo de pagamento invalido!")
             return False
 
-    def update_status(self, order_id: int, status: str, is_special: bool = False):
+    def update_status(self, order_id: int, status: str):
         order_data = self.repository.get(order_id)
         if not order_data:
             return
             
         self.repository.update_status(order_id, status)
         
-        if is_special:
+        if order_data['tp'] == 'especial':
             print(f"Pedido especial {order_id} > {status}")
             return
             

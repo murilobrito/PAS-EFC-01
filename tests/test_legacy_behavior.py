@@ -1,7 +1,7 @@
 import pytest
 import os
 import json
-from legacy import Sis, PedEspecial
+from legacy import Sis
 
 @pytest.fixture
 def sis(tmp_path, monkeypatch):
@@ -121,29 +121,23 @@ def test_gerar_relatorios(sis):
     sis.gerar_rel('clientes')
     assert os.path.exists('rel_clientes.txt')
 
-def test_ped_especial_add_ped(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-    s = PedEspecial()
+def test_ped_especial_add_ped(sis):
     itens = [
         {'nome': 'p1', 'p': 100, 'q': 1, 'tipo': 'normal'},
         {'nome': 'p2', 'p': 100, 'q': 1, 'tipo': 'desc10'},
         {'nome': 'p3', 'p': 100, 'q': 1, 'tipo': 'desc20'},
     ]
-    id_ped = s.add_ped('Joao', itens, 'vip')
-    pedido = s.get_ped(id_ped)
+    id_ped = sis.add_ped('Joao', itens, 'especial')
+    pedido = sis.get_ped(id_ped)
     # 100 + 90 + 80 = 270. 270 * 1.15 = 310.5
     assert pedido['tot'] == pytest.approx(310.5)
-    s.close()
 
-def test_ped_especial_upd_st(tmp_path, monkeypatch, capsys):
-    monkeypatch.chdir(tmp_path)
-    s = PedEspecial()
+def test_ped_especial_upd_st(sis, capsys):
     itens = [{'nome': 'p1', 'p': 100, 'q': 1, 'tipo': 'normal'}]
-    id_ped = s.add_ped('Joao', itens, 'normal')
-    s.upd_st(id_ped, 'qualquer_coisa')
+    id_ped = sis.add_ped('Joao', itens, 'especial')
+    sis.upd_st(id_ped, 'qualquer_coisa')
     captured = capsys.readouterr()
     assert 'Pedido especial' in captured.out
-    s.close()
 
 def test_main():
     from legacy import main
