@@ -45,19 +45,15 @@ class OrderService:
         if not order_data:
             return False
             
-        if value < order_data['tot']:
-            print("Valor insuficiente!")
-            return False
-
         if method not in self.payment_strategies:
             print("Metodo de pagamento invalido!")
             return False
 
         strategy = self.payment_strategies[method]
-        new_status = strategy.process()
-        if new_status:
+        success, new_status = strategy.process(value, order_data['tot'])
+        if success and new_status:
             self.update_status(order_id, new_status)
-        return True
+        return success
 
     def update_status(self, order_id: int, status: str) -> None:
         order_data = self.repository.get(order_id)
