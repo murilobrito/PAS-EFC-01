@@ -147,3 +147,338 @@ TOTAL                                            392     23    94%
 Success: no issues found in 18 source files
 
 `
+
+
+### Qualidade de Código (Lint com Ruff)
+`	ext
+All checks passed!
+
+`
+
+### Complexidade Ciclomática (Radon CC)
+`	ext
+src\interfaces\order_repository_interface.py
+    C 5:0 OrderRepositoryInterface - A (2)
+    M 7:4 OrderRepositoryInterface.save - A (1)
+    M 11:4 OrderRepositoryInterface.get - A (1)
+    M 15:4 OrderRepositoryInterface.update_status - A (1)
+    M 19:4 OrderRepositoryInterface.get_all - A (1)
+    M 23:4 OrderRepositoryInterface.get_all_clients_and_types - A (1)
+    M 27:4 OrderRepositoryInterface.get_total_by_client - A (1)
+    M 31:4 OrderRepositoryInterface.close - A (1)
+src\models\item.py
+    C 1:0 Item - A (2)
+    M 2:4 Item.__init__ - A (1)
+    M 8:4 Item.get_subtotal_base - A (1)
+src\models\order.py
+    C 5:0 Order - A (2)
+    M 6:4 Order.__init__ - A (1)
+    M 15:4 Order.add_item - A (1)
+src\models\order_factory.py
+    C 5:0 OrderFactory - A (3)
+    M 7:4 OrderFactory.create - A (2)
+src\observers\notification_observer.py
+    C 9:0 EmailNotifier - B (9)
+    M 10:4 EmailNotifier.update - B (8)
+    C 44:0 PointsNotifier - B (7)
+    C 29:0 SMSNotifier - B (6)
+    M 45:4 PointsNotifier.update - B (6)
+    M 30:4 SMSNotifier.update - A (5)
+    C 39:0 AccountManagerNotifier - A (4)
+    C 59:0 EspecialNotifier - A (4)
+    M 40:4 AccountManagerNotifier.update - A (3)
+    M 60:4 EspecialNotifier.update - A (3)
+    C 4:0 OrderObserver - A (2)
+    M 6:4 OrderObserver.update - A (1)
+src\observers\whatsapp_notifier.py
+    C 4:0 WhatsAppNotifier - B (6)
+    M 5:4 WhatsAppNotifier.update - A (5)
+src\repositories\sqlite_order_repository.py
+    M 16:4 SQLiteOrderRepository.save - A (3)
+    C 7:0 SQLiteOrderRepository - A (2)
+    M 26:4 SQLiteOrderRepository.get - A (2)
+    M 50:4 SQLiteOrderRepository.get_total_by_client - A (2)
+    M 8:4 SQLiteOrderRepository.__init__ - A (1)
+    M 38:4 SQLiteOrderRepository.update_status - A (1)
+    M 42:4 SQLiteOrderRepository.get_all - A (1)
+    M 46:4 SQLiteOrderRepository.get_all_clients_and_types - A (1)
+    M 58:4 SQLiteOrderRepository.close - A (1)
+src\services\order_service.py
+    M 43:4 OrderService.process_payment - A (5)
+    M 7:4 OrderService.__init__ - A (4)
+    M 21:4 OrderService.calculate_total - A (4)
+    M 68:4 OrderService.validate_stock - A (4)
+    C 6:0 OrderService - A (3)
+    M 17:4 OrderService._notify - A (2)
+    M 58:4 OrderService.update_status - A (2)
+    M 14:4 OrderService.attach - A (1)
+    M 35:4 OrderService.create_order - A (1)
+    M 79:4 OrderService.cancel_order - A (1)
+src\services\report_service.py
+    C 3:0 ReportService - A (3)
+    M 20:4 ReportService.generate_clients_report - A (3)
+    M 7:4 ReportService.generate_sales_report - A (2)
+    M 4:4 ReportService.__init__ - A (1)
+src\strategies\crypto_strategy.py
+    C 4:0 CriptoStrategy - A (3)
+    M 5:4 CriptoStrategy.process - A (2)
+src\strategies\discount_strategy.py
+    C 3:0 ItemDiscountStrategy - A (2)
+    C 8:0 NormalItemStrategy - A (2)
+    C 12:0 Desc10ItemStrategy - A (2)
+    C 16:0 Desc20ItemStrategy - A (2)
+    C 20:0 FreteGratisItemStrategy - A (2)
+    C 24:0 OrderDiscountStrategy - A (2)
+    C 29:0 NormalOrderStrategy - A (2)
+    C 33:0 VipOrderStrategy - A (2)
+    C 37:0 CorpOrderStrategy - A (2)
+    C 41:0 EspecialOrderStrategy - A (2)
+    M 5:4 ItemDiscountStrategy.calculate - A (1)
+    M 9:4 NormalItemStrategy.calculate - A (1)
+    M 13:4 Desc10ItemStrategy.calculate - A (1)
+    M 17:4 Desc20ItemStrategy.calculate - A (1)
+    M 21:4 FreteGratisItemStrategy.calculate - A (1)
+    M 26:4 OrderDiscountStrategy.calculate - A (1)
+    M 30:4 NormalOrderStrategy.calculate - A (1)
+    M 34:4 VipOrderStrategy.calculate - A (1)
+    M 38:4 CorpOrderStrategy.calculate - A (1)
+    M 42:4 EspecialOrderStrategy.calculate - A (1)
+src\strategies\payment_strategy.py
+    C 9:0 CartaoStrategy - A (3)
+    C 18:0 PixStrategy - A (3)
+    C 27:0 BoletoStrategy - A (3)
+    C 4:0 PaymentStrategy - A (2)
+    M 10:4 CartaoStrategy.process - A (2)
+    M 19:4 PixStrategy.process - A (2)
+    M 28:4 BoletoStrategy.process - A (2)
+    M 6:4 PaymentStrategy.process - A (1)
+src\strategies\volume_discount_strategy.py
+    C 3:0 VolumeDiscountDecorator - A (3)
+    M 7:4 VolumeDiscountDecorator.calculate - A (2)
+    M 4:4 VolumeDiscountDecorator.__init__ - A (1)
+
+86 blocks (classes, functions, methods) analyzed.
+Average complexity: A (2.3255813953488373)
+
+`
+
+### Linhas por Método (Radon Raw)
+`	ext
+src\__init__.py
+    LOC: 1
+    LLOC: 0
+    SLOC: 0
+    Comments: 1
+    Single comments: 1
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 100%
+        (C % S): 100%
+        (C + M % L): 100%
+src\interfaces\order_repository_interface.py
+    LOC: 32
+    LLOC: 25
+    SLOC: 25
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 7
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+src\interfaces\__init__.py
+    LOC: 1
+    LLOC: 0
+    SLOC: 0
+    Comments: 1
+    Single comments: 1
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 100%
+        (C % S): 100%
+        (C + M % L): 100%
+src\models\item.py
+    LOC: 9
+    LLOC: 12
+    SLOC: 8
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 1
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+src\models\order.py
+    LOC: 16
+    LLOC: 21
+    SLOC: 14
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 2
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+src\models\order_factory.py
+    LOC: 11
+    LLOC: 10
+    SLOC: 10
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 1
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+src\models\__init__.py
+    LOC: 1
+    LLOC: 0
+    SLOC: 0
+    Comments: 1
+    Single comments: 1
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 100%
+        (C % S): 100%
+        (C + M % L): 100%
+src\observers\notification_observer.py
+    LOC: 62
+    LLOC: 56
+    SLOC: 56
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 6
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+src\observers\whatsapp_notifier.py
+    LOC: 13
+    LLOC: 12
+    SLOC: 12
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 1
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+src\repositories\sqlite_order_repository.py
+    LOC: 59
+    LLOC: 45
+    SLOC: 47
+    Comments: 4
+    Single comments: 4
+    Multi: 0
+    Blank: 8
+    - Comment Stats
+        (C % L): 7%
+        (C % S): 9%
+        (C + M % L): 7%
+src\repositories\__init__.py
+    LOC: 1
+    LLOC: 0
+    SLOC: 0
+    Comments: 1
+    Single comments: 1
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 100%
+        (C % S): 100%
+        (C + M % L): 100%
+src\services\order_service.py
+    LOC: 81
+    LLOC: 68
+    SLOC: 65
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 16
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+src\services\report_service.py
+    LOC: 30
+    LLOC: 28
+    SLOC: 25
+    Comments: 2
+    Single comments: 2
+    Multi: 0
+    Blank: 3
+    - Comment Stats
+        (C % L): 7%
+        (C % S): 8%
+        (C + M % L): 7%
+src\services\__init__.py
+    LOC: 1
+    LLOC: 0
+    SLOC: 0
+    Comments: 1
+    Single comments: 1
+    Multi: 0
+    Blank: 0
+    - Comment Stats
+        (C % L): 100%
+        (C % S): 100%
+        (C + M % L): 100%
+src\strategies\crypto_strategy.py
+    LOC: 12
+    LLOC: 11
+    SLOC: 11
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 1
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+src\strategies\discount_strategy.py
+    LOC: 43
+    LLOC: 33
+    SLOC: 33
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 10
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+src\strategies\payment_strategy.py
+    LOC: 34
+    LLOC: 30
+    SLOC: 30
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 4
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+src\strategies\volume_discount_strategy.py
+    LOC: 11
+    LLOC: 9
+    SLOC: 9
+    Comments: 0
+    Single comments: 0
+    Multi: 0
+    Blank: 2
+    - Comment Stats
+        (C % L): 0%
+        (C % S): 0%
+        (C + M % L): 0%
+
+`
