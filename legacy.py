@@ -4,11 +4,32 @@ from src.services.report_service import ReportService
 from src.models.item import Item
 from src.models.order import Order
 from src.models.order_factory import OrderFactory
+from src.strategies.payment_strategy import CartaoStrategy, PixStrategy, BoletoStrategy
+from src.strategies.discount_strategy import NormalItemStrategy, Desc10ItemStrategy, Desc20ItemStrategy, FreteGratisItemStrategy, NormalOrderStrategy, VipOrderStrategy, CorpOrderStrategy, EspecialOrderStrategy
 
 class Sis:
     def __init__(self):
         self.repo = SQLiteOrderRepository('loja.db')
-        self.order_service = OrderService(self.repo)
+        
+        payment_strategies = {
+            'cartao': CartaoStrategy(),
+            'pix': PixStrategy(),
+            'boleto': BoletoStrategy()
+        }
+        item_strategies = {
+            'normal': NormalItemStrategy(),
+            'desc10': Desc10ItemStrategy(),
+            'desc20': Desc20ItemStrategy(),
+            'frete_gratis': FreteGratisItemStrategy()
+        }
+        order_strategies = {
+            'normal': NormalOrderStrategy(),
+            'vip': VipOrderStrategy(),
+            'corporativo': CorpOrderStrategy(),
+            'especial': EspecialOrderStrategy()
+        }
+        
+        self.order_service = OrderService(self.repo, payment_strategies, item_strategies, order_strategies)
         self.report_service = ReportService(self.repo)
 
     def add_ped(self, n, its, t):

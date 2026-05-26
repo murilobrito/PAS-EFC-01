@@ -1,29 +1,24 @@
 from src.interfaces.order_repository_interface import OrderRepositoryInterface
 from src.models.order import Order
+from typing import Dict, Any
 
 class OrderService:
-    def __init__(self, repository: OrderRepositoryInterface):
+    def __init__(self, repository: OrderRepositoryInterface, payment_strategies: Dict[str, Any] = None, item_strategies: Dict[str, Any] = None, order_strategies: Dict[str, Any] = None):
         self.repository = repository
+        self.payment_strategies = payment_strategies or {}
+        self.item_strategies = item_strategies or {}
+        self.order_strategies = order_strategies or {}
 
     def calculate_total(self, order: Order):
         tot = 0.0
         for i in order.itens:
-            if i.tipo == 'normal':
-                tot += i.preco * i.quantidade
-            elif i.tipo == 'desc10':
-                tot += i.preco * i.quantidade * 0.9
-            elif i.tipo == 'desc20':
-                tot += i.preco * i.quantidade * 0.8
-            elif i.tipo == 'frete_gratis':
+            if i.tipo in self.item_strategies:
+                tot += self.item_strategies[i.tipo].calculate(i.preco, i.quantidade)
+            else:
                 tot += i.preco * i.quantidade
         
-        if order.tipo_pedido == 'especial':
-            tot = tot * 1.15
-        else:
-            if order.tipo_pedido == 'vip':
-                tot *= 0.95
-            elif order.tipo_pedido == 'corporativo':
-                tot *= 0.90
+        if order.tipo_pedido in self.order_strategies:
+            tot = self.order_strategies[order.tipo_pedido].calculate(tot)
         
         order.total = tot
         return tot
@@ -57,23 +52,15 @@ class OrderService:
             print("Valor insuficiente!")
             return False
 
-        if method == 'cartao':
-            print("Processando pagamento com cartao...")
-            print("Cartao validado!")
-            self.update_status(order_id, 'aprovado')
-            return True
-        elif method == 'pix':
-            print("Gerando QR Code PIX...")
-            print("PIX recebido!")
-            self.update_status(order_id, 'aprovado')
-            return True
-        elif method == 'boleto':
-            print("Gerando boleto...")
-            print("Boleto gerado!")
-            return True
-        else:
+        if method not in self.payment_strategies:
             print("Metodo de pagamento invalido!")
             return False
+
+        strategy = self.payment_strategies[method]
+        new_status = strategy.process()
+        if new_status:
+            self.update_status(order_id, new_status)
+        return True
 
     def update_status(self, order_id: int, status: str):
         order_data = self.repository.get(order_id)
