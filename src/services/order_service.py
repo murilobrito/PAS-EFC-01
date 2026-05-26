@@ -8,6 +8,14 @@ class OrderService:
         self.payment_strategies = payment_strategies or {}
         self.item_strategies = item_strategies or {}
         self.order_strategies = order_strategies or {}
+        self.observers = []
+
+    def attach(self, observer):
+        self.observers.append(observer)
+
+    def _notify(self, event_type: str, order_data: Dict[str, Any]):
+        for obs in self.observers:
+            obs.update(event_type, order_data)
 
     def calculate_total(self, order: Order):
         tot = 0.0
@@ -27,20 +35,8 @@ class OrderService:
         self.calculate_total(order)
         order_id = self.repository.save(order)
         
-        n = order.cliente
-        if order.tipo_pedido == 'especial':
-            print(f"Email especial enviado para {n}: Pedido especial recebido!")
-            return order_id
-
-        if order.tipo_pedido == 'normal':
-            print(f"Email enviado para {n}: Pedido recebido!")
-        elif order.tipo_pedido == 'vip':
-            print(f"Email enviado para {n}: Pedido recebido!")
-            print(f"SMS enviado para {n}: Pedido VIP recebido!")
-        elif order.tipo_pedido == 'corporativo':
-            print(f"Email enviado para {n}: Pedido recebido!")
-            print(f"Notificacao enviada ao gerente de conta de {n}")
-            
+        order_data = {'id': order_id, 'cli': order.cliente, 'tp': order.tipo_pedido, 'tot': order.total, 'status': 'pendente'}
+        self._notify('created', order_data)
         return order_id
 
     def process_payment(self, order_id: int, method: str, value: float) -> bool:
@@ -68,32 +64,9 @@ class OrderService:
             return
             
         self.repository.update_status(order_id, status)
+        order_data['status'] = status
         
-        if order_data['tp'] == 'especial':
-            print(f"Pedido especial {order_id} > {status}")
-            return
-            
-        cli = order_data['cli']
-        tp = order_data['tp']
-        tot = order_data['tot']
-        
-        if status == 'aprovado':
-            print(f"Email enviado para {cli}: Pedido aprovado!")
-            if tp == 'vip':
-                print(f"SMS enviado para {cli}: Pedido aprovado!")
-        elif status == 'enviado':
-            print(f"Email enviado para {cli}: Pedido enviado")
-        elif status == 'entregue':
-            print(f"Email enviado para {cli}: Pedido entregue!")
-            if tp == 'vip':
-                pts = int(tot * 2)
-                print(f"Cliente VIP ganhou {pts} pontos!")
-            elif tp == 'corporativo':
-                pts = int(tot * 1.5)
-                print(f"Cliente corporativo ganhou {pts} pontos!")
-            else:
-                pts = int(tot)
-                print(f"Cliente ganhou {pts} pontos!")
+        self._notify('status_updated', order_data)
 
     def validate_stock(self, items: list) -> bool:
         est = {'produto1': 100, 'produto2': 50, 'produto3': 75}

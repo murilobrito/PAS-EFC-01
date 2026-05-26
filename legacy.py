@@ -6,6 +6,7 @@ from src.models.order import Order
 from src.models.order_factory import OrderFactory
 from src.strategies.payment_strategy import CartaoStrategy, PixStrategy, BoletoStrategy
 from src.strategies.discount_strategy import NormalItemStrategy, Desc10ItemStrategy, Desc20ItemStrategy, FreteGratisItemStrategy, NormalOrderStrategy, VipOrderStrategy, CorpOrderStrategy, EspecialOrderStrategy
+from src.observers.notification_observer import EmailNotifier, SMSNotifier, AccountManagerNotifier, PointsNotifier, EspecialNotifier
 
 class Sis:
     def __init__(self):
@@ -30,6 +31,13 @@ class Sis:
         }
         
         self.order_service = OrderService(self.repo, payment_strategies, item_strategies, order_strategies)
+        
+        self.order_service.attach(EmailNotifier())
+        self.order_service.attach(SMSNotifier())
+        self.order_service.attach(AccountManagerNotifier())
+        self.order_service.attach(PointsNotifier())
+        self.order_service.attach(EspecialNotifier())
+
         self.report_service = ReportService(self.repo)
 
     def add_ped(self, n, its, t):
