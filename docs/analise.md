@@ -69,3 +69,73 @@ Este documento descreve as violaÃ§Ãµes aos princÃ­pios SOLID encontradas no cÃ³d
 - **Trecho ProblemÃ¡tico:** `legacy.py`, linha 15 (`datetime.now()`) e `print` no meio do cÃ³digo.
 - **Justificativa TÃ©cnica:** O cÃ³digo confia em saÃ­das do sistema/console e no relÃ³gio interno instanciados diretamente em suas funÃ§Ãµes centrais. Em um bom sistema, serviÃ§os de log/notificaÃ§Ã£o ou provedores de tempo seriam injetados.
 - **Impacto PrÃ¡tico:** Impossibilita o teste determinÃ­stico de horÃ¡rios sem bibliotecas invasivas, alÃ©m de dificultar o redirecionamento dos alertas (que atualmente estÃ£o `hardcoded` como `prints`).
+
+
+## 8.2 (b) Soluções Implementadas
+
+*   **SRP**: Separação de responsabilidades em OrderService (cálculos e gestão do pedido) e ReportService (geração de relatórios).
+*   **ISP**: Criação da interface abstrata OrderRepositoryInterface que obriga as classes concretas a implementar apenas os métodos de persistência.
+*   **DIP**: O OrderService agora depende de OrderRepositoryInterface e das estratégias de pagamento e desconto, recebendo-as via construtor (injeção de dependências). O Sis instancia e injeta essas dependências.
+*   **OCP**: A implementação dos padrões Strategy e Observer permite adicionar novos métodos de pagamento, descontos e notificações sem modificar as classes principais de serviço.
+*   **LSP**: A classe filha PedEspecial que quebrava o contrato foi substituída por uso direto do OrderFactory e de OrderDiscountStrategy, garantindo total consistência.
+
+## 8.3 (c) Diagrama UML de Classes
+
+`mermaid
+classDiagram
+    class Sis {
+        +order_service: OrderService
+        +report_service: ReportService
+        +add_ped(n, its, t)
+        +get_ped(id)
+        +upd_st(id, s)
+    }
+
+    class OrderService {
+        -repository: OrderRepositoryInterface
+        -observers: List[OrderObserver]
+        -payment_strategies: Dict
+        -discount_strategies: Dict
+        +create_order(order)
+        +process_payment(id, method, value)
+        +update_status(id, status)
+    }
+
+    class OrderRepositoryInterface {
+        <<interface>>
+        +save(order)
+        +get(id)
+        +update_status(id, status)
+    }
+
+    class SQLiteOrderRepository {
+        -db_path: str
+        +save(order)
+        +get(id)
+        +update_status(id, status)
+    }
+
+    class PaymentStrategy {
+        <<interface>>
+        +process()
+    }
+    class PixStrategy
+    class CartaoStrategy
+
+    class OrderObserver {
+        <<interface>>
+        +update(event_type, order_data)
+    }
+    class EmailNotifier
+    class SMSNotifier
+
+    Sis --> OrderService
+    OrderService --> OrderRepositoryInterface
+    SQLiteOrderRepository ..|> OrderRepositoryInterface
+    OrderService --> PaymentStrategy
+    PaymentStrategy <|-- PixStrategy
+    PaymentStrategy <|-- CartaoStrategy
+    OrderService --> OrderObserver
+    OrderObserver <|-- EmailNotifier
+    OrderObserver <|-- SMSNotifier
+`

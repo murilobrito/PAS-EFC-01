@@ -1,23 +1,24 @@
 from src.interfaces.order_repository_interface import OrderRepositoryInterface
 from src.models.order import Order
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
+from src.observers.notification_observer import OrderObserver
 
 class OrderService:
-    def __init__(self, repository: OrderRepositoryInterface, payment_strategies: Dict[str, Any] = None, item_strategies: Dict[str, Any] = None, order_strategies: Dict[str, Any] = None):
+    def __init__(self, repository: OrderRepositoryInterface, payment_strategies: Optional[Dict[str, Any]] = None, item_strategies: Optional[Dict[str, Any]] = None, order_strategies: Optional[Dict[str, Any]] = None) -> None:
         self.repository = repository
         self.payment_strategies = payment_strategies or {}
         self.item_strategies = item_strategies or {}
         self.order_strategies = order_strategies or {}
-        self.observers = []
+        self.observers: List[OrderObserver] = []
 
-    def attach(self, observer):
+    def attach(self, observer: OrderObserver) -> None:
         self.observers.append(observer)
 
-    def _notify(self, event_type: str, order_data: Dict[str, Any]):
+    def _notify(self, event_type: str, order_data: Dict[str, Any]) -> None:
         for obs in self.observers:
             obs.update(event_type, order_data)
 
-    def calculate_total(self, order: Order):
+    def calculate_total(self, order: Order) -> float:
         tot = 0.0
         for i in order.itens:
             if i.tipo in self.item_strategies:
@@ -58,7 +59,7 @@ class OrderService:
             self.update_status(order_id, new_status)
         return True
 
-    def update_status(self, order_id: int, status: str):
+    def update_status(self, order_id: int, status: str) -> None:
         order_data = self.repository.get(order_id)
         if not order_data:
             return
@@ -68,7 +69,7 @@ class OrderService:
         
         self._notify('status_updated', order_data)
 
-    def validate_stock(self, items: list) -> bool:
+    def validate_stock(self, items: List[Dict[str, Any]]) -> bool:
         est = {'produto1': 100, 'produto2': 50, 'produto3': 75}
         for i in items:
             if i['nome'] not in est:
@@ -79,6 +80,6 @@ class OrderService:
                 return False
         return True
 
-    def cancel_order(self, order_id: int):
+    def cancel_order(self, order_id: int) -> None:
         self.repository.update_status(order_id, 'cancelado')
         print(f"Pedido {order_id} cancelado")

@@ -1,10 +1,11 @@
 from src.interfaces.order_repository_interface import OrderRepositoryInterface
+import os
 
 class ReportService:
-    def __init__(self, repository: OrderRepositoryInterface):
+    def __init__(self, repository: OrderRepositoryInterface) -> None:
         self.repository = repository
 
-    def generate_sales_report(self):
+    def generate_sales_report(self) -> None:
         rs = self.repository.get_all()
         print("=== RELATORIO DE VENDAS ===")
         tot_g = 0
@@ -17,7 +18,7 @@ class ReportService:
         with open('rel_vendas.txt', 'w') as f:
             f.write(f"Total de vendas: {tot_g}")
 
-    def generate_clients_report(self):
+    def generate_clients_report(self) -> None:
         rs = self.repository.get_all_clients_and_types()
         print("=== RELATORIO DE CLIENTES ===")
         for r in rs:

@@ -1,9 +1,11 @@
 import sqlite3
 import json
+from typing import Optional, Dict, Any, List, Tuple
 from src.interfaces.order_repository_interface import OrderRepositoryInterface
+from src.models.order import Order
 
 class SQLiteOrderRepository(OrderRepositoryInterface):
-    def __init__(self, db_path='loja.db'):
+    def __init__(self, db_path: str = 'loja.db') -> None:
         self.db = sqlite3.connect(db_path)
         self.c = self.db.cursor()
         self.c.execute('''CREATE TABLE IF NOT EXISTS ped (
@@ -11,16 +13,17 @@ class SQLiteOrderRepository(OrderRepositoryInterface):
             tot REAL, st TEXT, dt TEXT, tp TEXT)''')
         self.db.commit()
 
-    def save(self, order) -> int:
+    def save(self, order: Order) -> int:
         itens_dicts = [{'nome': i.nome, 'p': i.preco, 'q': i.quantidade, 'tipo': i.tipo} for i in order.itens]
         its_str = json.dumps(itens_dicts)
         self.c.execute("INSERT INTO ped (cli, itens, tot, st, dt, tp) VALUES (?, ?, ?, ?, ?, ?)",
                        (order.cliente, its_str, order.total, order.status, order.data, order.tipo_pedido))
         self.db.commit()
         order.id = self.c.lastrowid
+        assert order.id is not None
         return order.id
 
-    def get(self, order_id):
+    def get(self, order_id: int) -> Optional[Dict[str, Any]]:
         self.c.execute("SELECT * FROM ped WHERE id=?", (order_id,))
         r = self.c.fetchone()
         if r:
@@ -32,15 +35,15 @@ class SQLiteOrderRepository(OrderRepositoryInterface):
                     'tot': r[3], 'st': r[4], 'dt': r[5], 'tp': r[6]}
         return None
 
-    def update_status(self, order_id: int, status: str):
+    def update_status(self, order_id: int, status: str) -> None:
         self.c.execute("UPDATE ped SET st=? WHERE id=?", (status, order_id))
         self.db.commit()
 
-    def get_all(self):
+    def get_all(self) -> List[Any]:
         self.c.execute("SELECT * FROM ped")
         return self.c.fetchall()
 
-    def get_all_clients_and_types(self):
+    def get_all_clients_and_types(self) -> List[Tuple[Any, ...]]:
         self.c.execute("SELECT DISTINCT cli, tp FROM ped")
         return self.c.fetchall()
 
@@ -52,5 +55,5 @@ class SQLiteOrderRepository(OrderRepositoryInterface):
             t += r[3]
         return t
 
-    def close(self):
+    def close(self) -> None:
         self.db.close()

@@ -3,11 +3,11 @@ from typing import Dict, Any
 
 class OrderObserver(ABC):
     @abstractmethod
-    def update(self, event_type: str, order_data: Dict[str, Any]):
+    def update(self, event_type: str, order_data: Dict[str, Any]) -> None:
         pass
 
 class EmailNotifier(OrderObserver):
-    def update(self, event_type: str, order_data: Dict[str, Any]):
+    def update(self, event_type: str, order_data: Dict[str, Any]) -> None:
         cliente = order_data['cli']
         tp = order_data['tp']
         if event_type == 'created':
@@ -27,7 +27,7 @@ class EmailNotifier(OrderObserver):
                 print(f"Email enviado para {cliente}: Pedido entregue!")
 
 class SMSNotifier(OrderObserver):
-    def update(self, event_type: str, order_data: Dict[str, Any]):
+    def update(self, event_type: str, order_data: Dict[str, Any]) -> None:
         cliente = order_data['cli']
         tp = order_data['tp']
         if tp == 'vip':
@@ -37,12 +37,12 @@ class SMSNotifier(OrderObserver):
                 print(f"SMS enviado para {cliente}: Pedido aprovado!")
 
 class AccountManagerNotifier(OrderObserver):
-    def update(self, event_type: str, order_data: Dict[str, Any]):
+    def update(self, event_type: str, order_data: Dict[str, Any]) -> None:
         if event_type == 'created' and order_data['tp'] == 'corporativo':
             print(f"Notificacao enviada ao gerente de conta de {order_data['cli']}")
 
 class PointsNotifier(OrderObserver):
-    def update(self, event_type: str, order_data: Dict[str, Any]):
+    def update(self, event_type: str, order_data: Dict[str, Any]) -> None:
         if event_type == 'status_updated' and order_data.get('status') == 'entregue':
             tp = order_data['tp']
             tot = order_data['tot']
@@ -57,6 +57,6 @@ class PointsNotifier(OrderObserver):
                 print(f"Cliente ganhou {pts} pontos!")
 
 class EspecialNotifier(OrderObserver):
-    def update(self, event_type: str, order_data: Dict[str, Any]):
+    def update(self, event_type: str, order_data: Dict[str, Any]) -> None:
         if event_type == 'status_updated' and order_data['tp'] == 'especial':
             print(f"Pedido especial {order_data['id']} > {order_data['status']}")
