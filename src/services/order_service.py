@@ -53,7 +53,7 @@ class OrderService:
         success, new_status = strategy.process(value, order_data['tot'])
         if success and new_status:
             self.update_status(order_id, new_status)
-        return success
+        return bool(success)
 
     def update_status(self, order_id: int, status: str) -> None:
         order_data = self.repository.get(order_id)

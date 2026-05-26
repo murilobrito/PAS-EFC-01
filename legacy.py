@@ -7,6 +7,9 @@ from src.models.order_factory import OrderFactory
 from src.strategies.payment_strategy import CartaoStrategy, PixStrategy, BoletoStrategy
 from src.strategies.discount_strategy import NormalItemStrategy, Desc10ItemStrategy, Desc20ItemStrategy, FreteGratisItemStrategy, NormalOrderStrategy, VipOrderStrategy, CorpOrderStrategy, EspecialOrderStrategy
 from src.observers.notification_observer import EmailNotifier, SMSNotifier, AccountManagerNotifier, PointsNotifier, EspecialNotifier
+from src.strategies.crypto_strategy import CriptoStrategy
+from src.observers.whatsapp_notifier import WhatsAppNotifier
+from src.strategies.volume_discount_strategy import VolumeDiscountDecorator
 
 class Sis:
     def __init__(self):
@@ -15,13 +18,14 @@ class Sis:
         payment_strategies = {
             'cartao': CartaoStrategy(),
             'pix': PixStrategy(),
-            'boleto': BoletoStrategy()
+            'boleto': BoletoStrategy(),
+            'cripto': CriptoStrategy()
         }
         item_strategies = {
-            'normal': NormalItemStrategy(),
-            'desc10': Desc10ItemStrategy(),
-            'desc20': Desc20ItemStrategy(),
-            'frete_gratis': FreteGratisItemStrategy()
+            'normal': VolumeDiscountDecorator(NormalItemStrategy()),
+            'desc10': VolumeDiscountDecorator(Desc10ItemStrategy()),
+            'desc20': VolumeDiscountDecorator(Desc20ItemStrategy()),
+            'frete_gratis': VolumeDiscountDecorator(FreteGratisItemStrategy())
         }
         order_strategies = {
             'normal': NormalOrderStrategy(),
@@ -37,6 +41,7 @@ class Sis:
         self.order_service.attach(AccountManagerNotifier())
         self.order_service.attach(PointsNotifier())
         self.order_service.attach(EspecialNotifier())
+        self.order_service.attach(WhatsAppNotifier())
 
         self.report_service = ReportService(self.repo)
 
